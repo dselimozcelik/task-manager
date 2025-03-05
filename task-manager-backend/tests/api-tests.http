@@ -1,0 +1,31 @@
+### Değişkenler
+@baseUrl = http://localhost:5001/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... // Giriş yaptıktan sonra buraya token'ı yapıştırın
+
+### Kullanıcı Kaydı
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "Test1234!"
+}
+
+### Kullanıcı Girişi
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test1234!"
+}
+
+### Token'ı otomatik olarak kaydetme (isteğe bağlı)
+# Bu isteğin yanıtından token'ı otomatik olarak almak için:
+# @authToken = {{login.response.body.token}}
+
+### Kullanıcı Profili Alma
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{authToken}}
