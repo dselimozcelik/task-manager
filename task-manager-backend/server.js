@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
+const authRoutes = require('./routes/authRoutes');
+const taskRoutes = require('./routes/taskRoutes'); 
 
 // Load environment variables from the .env file
 dotenv.config();
@@ -18,7 +20,8 @@ app.use(express.json()); // Parse incoming JSON payloads for easier data handlin
 app.use(express.urlencoded({ extended: false })); // Parse URL-encoded data from HTTP requests
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
 
 
 // Define the main route for the API

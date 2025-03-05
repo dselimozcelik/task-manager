@@ -1,8 +1,11 @@
-### Değişkenler
+### ==================== DEĞİŞKENLER ====================
 @baseUrl = http://localhost:5001/api
 @authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... // Giriş yaptıktan sonra buraya token'ı yapıştırın
 
-### Kullanıcı Kaydı
+### ==================== KULLANICI API TESTLERİ ====================
+
+### 1. Kullanıcı Kaydı
+# @name register
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
@@ -12,7 +15,7 @@ Content-Type: application/json
   "password": "Test1234!"
 }
 
-### Kullanıcı Girişi
+### 2. Kullanıcı Girişi
 # @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
@@ -22,10 +25,145 @@ Content-Type: application/json
   "password": "Test1234!"
 }
 
-### Token'ı otomatik olarak kaydetme (isteğe bağlı)
-# Bu isteğin yanıtından token'ı otomatik olarak almak için:
-# @authToken = {{login.response.body.token}}
+### 3. Token'ı otomatik olarak kaydetme
+# Bu satırın başındaki # işaretini kaldırarak token'ı otomatik olarak alabilirsiniz
+@authToken = {{login.response.body.token}}
 
-### Kullanıcı Profili Alma
+### 4. Kullanıcı Profili Alma
 GET {{baseUrl}}/auth/me
 Authorization: Bearer {{authToken}}
+
+### ==================== GÖREV API TESTLERİ ====================
+
+### 5. Yeni Görev Oluşturma
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Önemli Görev",
+  "description": "Bu çok önemli bir görev",
+  "status": "not-started",
+  "priority": "high",
+  "category": "iş",
+  "dueDate": "2023-12-31"
+}
+
+### 6. Oluşturulan görevin ID'sini kaydet
+# Bu satırın başındaki # işaretini kaldırarak görev ID'sini otomatik olarak alabilirsiniz
+# @taskId = {{createTask.response.body._id}}
+
+### 7. İkinci Bir Görev Oluşturma
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Rutin Görev",
+  "description": "Bu rutin bir görev",
+  "status": "not-started",
+  "priority": "medium",
+  "category": "kişisel",
+  "dueDate": "2023-11-15"
+}
+
+### 8. Tüm Görevleri Getirme
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{authToken}}
+
+### 9. Belirli Bir Görevi Getirme
+# Aşağıdaki TASK_ID_HERE yerine gerçek bir görev ID'si yazın veya @taskId değişkenini kullanın
+GET {{baseUrl}}/tasks/TASK_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### 10. Görevi Güncelleme
+PUT {{baseUrl}}/tasks/TASK_ID_HERE
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Güncellenmiş Görev",
+  "description": "Bu görev güncellendi",
+  "status": "in-progress",
+  "priority": "high"
+}
+
+### 11. Güncellenmiş Görevi Kontrol Etme
+GET {{baseUrl}}/tasks/TASK_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### 12. Görevi Silme
+DELETE {{baseUrl}}/tasks/TASK_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### 13. Silinen Görevi Kontrol Etme (404 hatası beklenir)
+GET {{baseUrl}}/tasks/TASK_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### ==================== HATA DURUMU TESTLERİ ====================
+
+### 14. Geçersiz Kullanıcı Kaydı (E-posta eksik)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Hatalı Kullanıcı",
+  "password": "Test1234!"
+}
+
+### 15. Geçersiz Kullanıcı Girişi (Yanlış şifre)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "YanlışŞifre123!"
+}
+
+### 16. Kimlik Doğrulama Olmadan Görevlere Erişim
+GET {{baseUrl}}/tasks
+# Authorization header'ı yok
+
+### 17. Geçersiz Token ile Görevlere Erişim
+GET {{baseUrl}}/tasks
+Authorization: Bearer geçersiz_token
+
+### 18. Geçersiz Görev Oluşturma (Başlık eksik)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "description": "Başlıksız görev",
+  "priority": "low"
+}
+
+### 19. Var Olmayan Görevi Getirme
+GET {{baseUrl}}/tasks/123456789012345678901234
+Authorization: Bearer {{authToken}}
+
+### ==================== FİLTRELEME TESTLERİ (İsteğe Bağlı) ====================
+
+### 20. Status'a Göre Filtreleme
+GET {{baseUrl}}/tasks?status=not-started
+Authorization: Bearer {{authToken}}
+
+### 21. Priority'ye Göre Filtreleme
+GET {{baseUrl}}/tasks?priority=high
+Authorization: Bearer {{authToken}}
+
+### 22. Category'ye Göre Filtreleme
+GET {{baseUrl}}/tasks?category=iş
+Authorization: Bearer {{authToken}}
+
+### 23. Birden Fazla Filtreleme
+GET {{baseUrl}}/tasks?status=not-started&priority=high
+Authorization: Bearer {{authToken}}
+
+### ==================== KULLANIM KILAVUZU ====================
+# 1. Önce kullanıcı kaydı yapın (#1) veya giriş yapın (#2)
+# 2. Aldığınız token'ı @authToken değişkenine atayın veya #3'teki yorum satırını kaldırın
+# 3. Görev oluşturun (#5) ve ID'sini alın
+# 4. Bu ID'yi diğer testlerdeki TASK_ID_HERE yerine yazın veya #6'daki yorum satırını kaldırın
+# 5. Testleri sırayla çalıştırın
