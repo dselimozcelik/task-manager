@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
+import TaskList from './components/TaskList';
 import { useAuth } from './context/AuthContext';
 
 // Protected Route component
@@ -38,36 +39,38 @@ const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route 
-            path="/login" 
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/tasks" 
-            element={
-              <ProtectedRoute>
-                <div>Tasks Page (Coming Soon)</div>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/" 
-            element={<Navigate to="/login" />} 
-          />
-        </Routes>
+        <div className="min-h-screen bg-gray-50">
+          <Routes>
+            <Route 
+              path="/login" 
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/register" 
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/tasks" 
+              element={
+                <ProtectedRoute>
+                  <TaskList />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/" 
+              element={<Navigate to="/login" />} 
+            />
+          </Routes>
+        </div>
       </AuthProvider>
     </Router>
   );
