@@ -14,15 +14,21 @@ connectDB();
 
 const app = express();
 
+// Enable CORS for all origins during development
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+}));
+
 // Middleware setup
-app.use(cors()); // Enable Cross-Origin Resource Sharing to allow API requests from different origins
-app.use(express.json()); // Parse incoming JSON payloads for easier data handling
-app.use(express.urlencoded({ extended: false })); // Parse URL-encoded data from HTTP requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
-
 
 // Define the main route for the API
 app.get('/', (req, res) => {
@@ -31,7 +37,6 @@ app.get('/', (req, res) => {
 
 // Error handler middleware
 app.use(errorHandler);
-
 
 // Set the port number from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;
